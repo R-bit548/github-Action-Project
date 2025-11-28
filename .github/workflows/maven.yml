@@ -95,9 +95,10 @@ jobs:
           name: app-jar
           path: target/*.jar
 
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Debug Sonar URL
+        run: |
+          echo "SONAR_HOST_URL =>"
+          printf '%q\n' "$SONAR_HOST_URL"
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
@@ -145,8 +146,7 @@ jobs:
     needs: build_docker_image_and_push
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Install AWS CLI
         run: |
