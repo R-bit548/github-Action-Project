@@ -142,9 +142,9 @@ jobs:
 
       - name: Install kubectl
         run: |
-          curl -o kubectl https://amazon-eks.s3.amazonaws.com/1.30.0/2024-07-18/bin/linux/amd64/kubectl
-          chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/
+          curl -LO "https://s3.us-west-2.amazonaws.com/amazon-eks/1.30.0/2024-07-18/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/kubectl
 
       - name: Update kubeconfig from AWS
         run: |
