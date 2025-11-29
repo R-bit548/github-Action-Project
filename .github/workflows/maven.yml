@@ -63,6 +63,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
+
       - name: Build Project
         run: mvn package
 
@@ -72,17 +73,13 @@ jobs:
           name: app-jar
           path: target/*.jar
 
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
 
-      - name: SonarQube Quality Gate check
+      - name: SonarQube Quality Gate Check
         id: sonarqube-quality-gate-check
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
@@ -91,7 +88,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
 
-  buils_docker_image_and_push:
+  build_docker_image_and_push:
     runs-on: self-hosted
     needs: build_project_and_sonar_scan
     steps:
@@ -123,10 +120,9 @@ jobs:
           tags: sonymayur/bankapp:latest
           file: ./Dockerfile
 
-    deploy_to_kubernetes:
+  deploy_to_kubernetes:
     runs-on: self-hosted
-    needs: buils_docker_image_and_push
-
+    needs: build_docker_image_and_push
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -157,10 +153,5 @@ jobs:
       - name: Test kubectl
         run: kubectl get nodes
 
-      - name: Deploy to EKS
+      - name: Deploy Application to EKS
         run: kubectl apply -f ds.yml --validate=false
-
-
-      - name: Deploy to EKS
-        run: |
-          kubectl apply -f ds.yml --validate=false
